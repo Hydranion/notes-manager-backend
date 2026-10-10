@@ -1,0 +1,617 @@
+{
+  "info": {
+    "name": "Notes Manager API",
+    "description": "Sequential CRUD and validation requests for notes, categories and tags.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "categoryId",
+      "value": ""
+    },
+    {
+      "key": "tagId",
+      "value": ""
+    },
+    {
+      "key": "noteId",
+      "value": ""
+    },
+    {
+      "key": "boundaryNoteId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "GET health",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/health"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('HTTP 200: GET health', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Categories CRUD",
+      "item": [
+        {
+          "name": "POST create category",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('created', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('categoryId', pm.response.json().data.id);",
+                  "pm.test('HTTP 201: POST create category', () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Study\",\n  \"description\": \"Study notes for API practice\"\n}"
+            },
+            "url": "{{baseUrl}}/api/categories"
+          }
+        },
+        {
+          "name": "GET categories",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/categories"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('HTTP 200: GET categories', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET category by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/categories/{{categoryId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('HTTP 200: GET category by ID', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT update category",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Study and work\",\n  \"description\": \"Updated category description\"\n}"
+            },
+            "url": "{{baseUrl}}/api/categories/{{categoryId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('HTTP 200: PUT update category', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH category description",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Partially updated description\"\n}"
+            },
+            "url": "{{baseUrl}}/api/categories/{{categoryId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('HTTP 200: PATCH category description', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Tags CRUD",
+      "item": [
+        {
+          "name": "POST create tag",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('created', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('tagId', pm.response.json().data.id);",
+                  "pm.test('HTTP 201: POST create tag', () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"practice\"\n}"
+            },
+            "url": "{{baseUrl}}/api/tags"
+          }
+        },
+        {
+          "name": "GET tags",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/tags"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('HTTP 200: GET tags', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET tag by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/tags/{{tagId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('HTTP 200: GET tag by ID', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT update tag",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"programming-practice\"\n}"
+            },
+            "url": "{{baseUrl}}/api/tags/{{tagId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('HTTP 200: PUT update tag', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH tag",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"practice\"\n}"
+            },
+            "url": "{{baseUrl}}/api/tags/{{tagId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('HTTP 200: PATCH tag', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Notes CRUD and search",
+      "item": [
+        {
+          "name": "POST create note",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('created', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('noteId', pm.response.json().data.id);",
+                  "pm.test('HTTP 201: POST create note', () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"API practice plan\",\n  \"content\": \"Review CRUD and write a short report\",\n  \"categoryId\": {{categoryId}},\n  \"tagIds\": [{{tagId}}]\n}"
+            },
+            "url": "{{baseUrl}}/api/notes"
+          }
+        },
+        {
+          "name": "POST invalid note (expect 400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('invalid note rejected', () => pm.response.to.have.status(400));",
+                  "pm.test('HTTP 400: POST invalid note (expect 400)', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"\",\n  \"content\": \"\"\n}"
+            },
+            "url": "{{baseUrl}}/api/notes"
+          }
+        },
+        {
+          "name": "POST note with maximum title length",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('boundary title accepted', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('boundaryNoteId', pm.response.json().data.id);",
+                  "pm.test('HTTP 201: POST note with maximum title length', () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\",\n  \"content\": \"Boundary value test\"\n}"
+            },
+            "url": "{{baseUrl}}/api/notes"
+          }
+        },
+        {
+          "name": "GET notes",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/notes"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('HTTP 200: GET notes', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET notes with text search",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/notes?q=practice"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('HTTP 200: GET notes with text search', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET notes filtered by category and tag",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/notes?categoryId={{categoryId}}&tagId={{tagId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('HTTP 200: GET notes filtered by category and tag', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET note by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/notes/{{noteId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('HTTP 200: GET note by ID', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PUT update note",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"API practice plan revised\",\n  \"content\": \"Review CRUD, search, and write a short report\"\n}"
+            },
+            "url": "{{baseUrl}}/api/notes/{{noteId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('HTTP 200: PUT update note', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PATCH note content",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Practice CRUD, search, and validation scenarios\"\n}"
+            },
+            "url": "{{baseUrl}}/api/notes/{{noteId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('HTTP 200: PATCH note content', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET invalid note ID (expect 400)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/notes/0"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('HTTP 400: GET invalid note ID (expect 400)', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET missing note (expect 404)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/notes/999999"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('HTTP 404: GET missing note (expect 404)', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "DELETE note",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/notes/{{noteId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('HTTP 204: DELETE note', () => pm.response.to.have.status(204));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Cleanup",
+      "item": [
+        {
+          "name": "DELETE boundary note",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/notes/{{boundaryNoteId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('HTTP 204: DELETE boundary note', () => pm.response.to.have.status(204));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "DELETE tag",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/tags/{{tagId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('HTTP 204: DELETE tag', () => pm.response.to.have.status(204));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "DELETE category",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/categories/{{categoryId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('HTTP 204: DELETE category', () => pm.response.to.have.status(204));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

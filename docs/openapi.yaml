@@ -1,0 +1,400 @@
+openapi: 3.0.3
+info:
+  title: Notes Manager API
+  version: 1.0.0
+  description: REST API for notes, categories, and tags. Notes can be filtered by text, category, or tag.
+servers:
+  - url: http://localhost:3000
+tags:
+  - name: Notes
+  - name: Categories
+  - name: Tags
+paths:
+  /health:
+    get:
+      summary: Check API health
+      responses:
+        '200':
+          description: API is running
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: ok }
+  /api/notes:
+    get:
+      tags: [Notes]
+      summary: List notes and optionally search or filter them
+      parameters:
+        - in: query
+          name: q
+          schema: { type: string }
+          description: Substring search over title and content
+        - in: query
+          name: categoryId
+          schema: { type: integer, minimum: 1 }
+        - in: query
+          name: tagId
+          schema: { type: integer, minimum: 1 }
+      responses:
+        '200':
+          description: Matching notes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/Note' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+    post:
+      tags: [Notes]
+      summary: Create a note
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/NoteInput' }
+      responses:
+        '201':
+          description: Note created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/NoteResponse' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /api/notes/{id}:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    get:
+      tags: [Notes]
+      summary: Get a note by ID
+      responses:
+        '200':
+          description: Note found
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/NoteResponse' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    put:
+      tags: [Notes]
+      summary: Replace a note; omitted categoryId and tagIds are cleared
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/NoteInput' }
+      responses:
+        '200':
+          description: Note updated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/NoteResponse' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      tags: [Notes]
+      summary: Partially update a note
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/NotePatch' }
+      responses:
+        '200':
+          description: Note updated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/NoteResponse' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    delete:
+      tags: [Notes]
+      summary: Delete a note
+      responses:
+        '204': { description: Note deleted }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /api/categories:
+    get:
+      tags: [Categories]
+      summary: List categories
+      responses:
+        '200':
+          description: Categories with note counts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/Category' }
+    post:
+      tags: [Categories]
+      summary: Create a category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CategoryInput' }
+      responses:
+        '201':
+          description: Category created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CategoryResponse' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /api/categories/{id}:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    get:
+      tags: [Categories]
+      summary: Get a category and its notes
+      responses:
+        '200':
+          description: Category found
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CategoryResponse' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    put:
+      tags: [Categories]
+      summary: Replace a category; omitted description is cleared
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CategoryInput' }
+      responses:
+        '200':
+          description: Category updated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CategoryResponse' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      tags: [Categories]
+      summary: Partially update a category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CategoryPatch' }
+      responses:
+        '200':
+          description: Category updated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CategoryResponse' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    delete:
+      tags: [Categories]
+      summary: Delete a category; its notes remain uncategorized
+      responses:
+        '204': { description: Category deleted }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /api/tags:
+    get:
+      tags: [Tags]
+      summary: List tags
+      responses:
+        '200':
+          description: Tags
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/Tag' }
+    post:
+      tags: [Tags]
+      summary: Create a tag
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TagInput' }
+      responses:
+        '201':
+          description: Tag created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TagResponse' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /api/tags/{id}:
+    parameters:
+      - $ref: '#/components/parameters/Id'
+    get:
+      tags: [Tags]
+      summary: Get a tag and its notes
+      responses:
+        '200':
+          description: Tag found
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TagResponse' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    put:
+      tags: [Tags]
+      summary: Update a tag
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TagInput' }
+      responses:
+        '200':
+          description: Tag updated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TagResponse' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      tags: [Tags]
+      summary: Partially update a tag
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TagInput' }
+      responses:
+        '200':
+          description: Tag updated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TagResponse' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    delete:
+      tags: [Tags]
+      summary: Delete a tag; note links are removed
+      responses:
+        '204': { description: Tag deleted }
+        '404': { $ref: '#/components/responses/NotFound' }
+components:
+  parameters:
+    Id:
+      in: path
+      name: id
+      required: true
+      schema: { type: integer, minimum: 1 }
+  responses:
+    BadRequest:
+      description: Invalid input or related record ID
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorResponse' }
+    NotFound:
+      description: Resource does not exist
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorResponse' }
+    Conflict:
+      description: Duplicate unique value
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorResponse' }
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            message: { type: string }
+            details: { type: array, items: { type: object } }
+    Note:
+      type: object
+      properties:
+        id: { type: integer }
+        title: { type: string, maxLength: 160 }
+        content: { type: string }
+        categoryId: { type: integer, nullable: true }
+        category: { allOf: [{ $ref: '#/components/schemas/CategoryBrief' }], nullable: true }
+        tags: { type: array, items: { $ref: '#/components/schemas/Tag' } }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    NoteInput:
+      type: object
+      required: [title, content]
+      properties:
+        title: { type: string, minLength: 1, maxLength: 160 }
+        content: { type: string, minLength: 1 }
+        categoryId: { type: integer, nullable: true }
+        tagIds: { type: array, items: { type: integer, minimum: 1 } }
+    NotePatch:
+      type: object
+      minProperties: 1
+      description: Provide at least one field; all fields are optional for updates.
+      properties:
+        title: { type: string, minLength: 1, maxLength: 160 }
+        content: { type: string, minLength: 1 }
+        categoryId: { type: integer, nullable: true }
+        tagIds: { type: array, items: { type: integer, minimum: 1 } }
+    NoteResponse:
+      type: object
+      properties:
+        data: { $ref: '#/components/schemas/Note' }
+    CategoryBrief:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+    Category:
+      allOf:
+        - $ref: '#/components/schemas/CategoryBrief'
+        - type: object
+          properties:
+            description: { type: string, nullable: true }
+            noteCount: { type: integer }
+            notes: { type: array, items: { $ref: '#/components/schemas/NoteBrief' } }
+            createdAt: { type: string, format: date-time }
+            updatedAt: { type: string, format: date-time }
+    CategoryInput:
+      type: object
+      required: [name]
+      properties:
+        name: { type: string, minLength: 1, maxLength: 80 }
+        description: { type: string, nullable: true, maxLength: 500 }
+    CategoryPatch:
+      type: object
+      minProperties: 1
+      description: Provide at least one field; all fields are optional for updates.
+      properties:
+        name: { type: string, minLength: 1, maxLength: 80 }
+        description: { type: string, nullable: true, maxLength: 500 }
+    CategoryResponse:
+      type: object
+      properties:
+        data: { $ref: '#/components/schemas/Category' }
+    Tag:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string, maxLength: 40 }
+        notes: { type: array, items: { $ref: '#/components/schemas/NoteBrief' } }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    TagInput:
+      type: object
+      required: [name]
+      properties:
+        name: { type: string, minLength: 1, maxLength: 40 }
+    TagResponse:
+      type: object
+      properties:
+        data: { $ref: '#/components/schemas/Tag' }
+    NoteBrief:
+      type: object
+      properties:
+        id: { type: integer }
+        title: { type: string }
